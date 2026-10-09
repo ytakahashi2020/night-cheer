@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data: blob:; base-uri 'none'; form-action 'none'">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Night Cheer</title>
+<style>
+:root{
+  --navy1:#141a44;--navy2:#2b3270;--navy3:#3f4590;
+  --gold:#ffd86b;--ink:#2a2a5a;--soft:#cfd3ff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  font-family:system-ui,"Hiragino Sans","Noto Sans JP",sans-serif;
+  color:#fff;
+  background:linear-gradient(180deg,var(--navy1) 0%,var(--navy2) 65%,var(--navy3) 100%) fixed;
+  min-height:100vh;overflow-x:hidden;position:relative;
+}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star{position:absolute;background:#fff4c9;border-radius:50%;animation:tw 4s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.25}50%{opacity:1}}
+.moon{position:fixed;top:18px;right:22px;font-size:34px;z-index:0;filter:drop-shadow(0 0 14px rgba(255,233,168,.6))}
+main{position:relative;z-index:1;max-width:460px;margin:0 auto;padding:26px 18px 40px}
+header{text-align:center;margin-bottom:14px}
+.logo{font-size:40px;line-height:1}
+h1{margin:6px 0 4px;font-size:30px;color:var(--gold);letter-spacing:1px}
+.tag{margin:0;color:var(--soft);font-size:15px}
+.tabs{display:flex;gap:6px;background:rgba(255,255,255,.1);border-radius:999px;padding:4px;margin:18px 0 16px}
+.tab{flex:1;border:0;background:transparent;color:var(--soft);font:inherit;font-weight:600;padding:10px;border-radius:999px;cursor:pointer}
+.tab[aria-selected="true"]{background:rgba(255,255,255,.2);color:#fff}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field label{font-size:13px;color:var(--soft)}
+.field input{font:inherit;padding:12px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff}
+.field input::placeholder{color:#a9aee6}
+.stage{perspective:900px;min-height:270px;display:flex;align-items:center;justify-content:center}
+.card{
+  width:100%;max-width:340px;min-height:260px;padding:28px 22px;text-align:center;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);
+  border-radius:22px;backdrop-filter:blur(4px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 10px 30px rgba(8,10,40,.4);position:relative;overflow:hidden;
+}
+.card.flip{animation:flip .7s cubic-bezier(.2,.8,.3,1)}
+@keyframes flip{from{transform:rotateY(90deg) translateY(10px);opacity:0}to{transform:none;opacity:1}}
+.card .icon{font-size:48px}
+.card .title{font-size:21px;font-weight:700;line-height:1.35;margin:4px 0}
+.card .sub{font-size:15px;color:var(--soft);line-height:1.5}
+.card .to{font-size:13px;color:var(--gold);letter-spacing:.5px}
+.card .num{font-size:12px;color:#a9aee6;margin-top:8px}
+.card.rare{
+  background:linear-gradient(135deg,#fff3b0,#f7c948,#fff3b0);border:3px solid #e0a800;
+  box-shadow:0 0 36px rgba(247,201,72,.65);color:#6b4200;
+}
+.card.rare .sub{color:#7a5200}.card.rare .to{color:#8a5a00;font-weight:700}.card.rare .num{color:#8a5a00}
+.card.rare::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.65) 50%,transparent 65%);transform:translateX(-120%);animation:shine 2.4s ease-in-out .5s 2}
+@keyframes shine{to{transform:translateX(120%)}}
+.rarelabel{font-size:12px;font-weight:800;letter-spacing:3px;color:#8a5a00}
+.draw{
+  display:block;width:100%;margin-top:22px;border:0;border-radius:999px;
+  background:var(--gold);color:var(--ink);font:inherit;font-size:19px;font-weight:800;
+  padding:18px;cursor:pointer;box-shadow:0 6px 20px rgba(255,216,107,.35);transition:transform .15s;
+}
+.draw:hover{transform:translateY(-2px)}.draw:active{transform:scale(.98)}
+.actions{display:flex;gap:10px;margin-top:14px}
+.btn{
+  flex:1;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;
+  font:inherit;font-weight:600;padding:12px 8px;border-radius:999px;cursor:pointer;
+}
+.btn:hover{background:rgba(255,255,255,.2)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.on{background:rgba(255,216,107,.25);border-color:var(--gold);color:var(--gold)}
+.msg{min-height:24px;text-align:center;margin:12px 0 0;color:var(--gold);font-size:14px}
+.stats{display:flex;justify-content:center;gap:22px;margin-top:10px;color:var(--soft);font-size:13px}
+.stats b{color:#fff;font-size:16px}
+.list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.item{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);border-radius:16px;padding:14px;display:flex;gap:12px;align-items:flex-start}
+.item.rare{background:linear-gradient(135deg,rgba(255,243,176,.3),rgba(247,201,72,.25));border-color:var(--gold)}
+.item .ic{font-size:30px}
+.item .tx{flex:1;min-width:0}
+.item .tx strong{display:block;font-size:15px;line-height:1.35}
+.item .tx span{font-size:13px;color:var(--soft)}
+.item .mini{display:flex;flex-direction:column;gap:6px}
+.mini button{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font:inherit;font-size:12px;border-radius:999px;padding:6px 12px;cursor:pointer}
+.empty{text-align:center;color:var(--soft);padding:36px 10px;line-height:1.6}
+.empty div{font-size:40px}
+[hidden]{display:none!important}
+footer{text-align:center;color:#a9aee6;font-size:12px;margin-top:28px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (min-width:700px){main{padding-top:48px}h1{font-size:36px}}
+</style>
+</head>
+<body>
+<div id="stars" aria-hidden="true"></div>
+<div class="moon" aria-hidden="true">🌙</div>
+<main>
+  <header>
+    <div class="logo" aria-hidden="true">⭐</div>
+    <h1>Night Cheer</h1>
+    <p class="tag">One kind card for a tired day</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-draw" aria-selected="true" data-demo="tab-draw">Today's card</button>
+    <button class="tab" role="tab" id="tab-saved" aria-selected="false" data-demo="tab-saved">Saved (<span id="savedCount">0</span>)</button>
+  </div>
+
+  <section id="viewDraw">
+    <div class="field">
+      <label for="who">Who is this card for? (optional)</label>
+      <input id="who" type="text" maxlength="24" placeholder="e.g. Mom, Alex, the night-shift team" data-demo="input-recipient" autocomplete="off">
+    </div>
+
+    <div class="stage">
+      <div class="card" id="card" data-demo="card-result" aria-live="polite">
+        <div class="icon">🌙</div>
+        <div class="title">Ready when you are.</div>
+        <div class="sub">Press the button to open a little card of kindness.</div>
+      </div>
+    </div>
+
+    <button class="draw" id="draw" data-demo="btn-draw">✨ Draw today's card</button>
+
+    <div class="actions">
+      <button class="btn" id="save" data-demo="btn-save" disabled>♡ Save</button>
+      <button class="btn" id="copy" data-demo="btn-copy" disabled>📋 Copy to send</button>
+    </div>
+    <p class="msg" id="msg" role="status" data-demo="message-area"></p>
+    <div class="stats">
+      <div>Cards drawn <b id="nDrawn">0</b></div>
+      <div>Rare cards <b id="nRare">0</b></div>
+    </div>
+  </section>
+
+  <section id="viewSaved" hidden>
+    <ul class="list" id="list" data-demo="saved-list"></ul>
+  </section>
+
+  <footer>Be kind to yourself, too. 🌟</footer>
+</main>
+
+<script>
+(function(){
+  var NORMAL=[
+    ["☕","You did enough today.","Now go rest. The dishes can wait."],
+    ["🌙","You showed up today.","That counts, more than you think."],
+    ["⭐","Rest well.","You earned it."],
+    ["🫖","Thank you for carrying so much.","Please put something down tonight."],
+    ["🛋️","The couch is calling.","It says you deserve it."],
+    ["🌟","Today was a lot.","And you handled it."],
+    ["🍵","Take a slow breath.","The day is officially over."],
+    ["🧸","You are allowed to be tired.","Tired means you tried."],
+    ["🌌","Even the sky takes a break.","Tonight, so can you."],
+    ["🍪","Snack time is a valid plan.","Cookies count as self-care."],
+    ["💛","Someone is glad you exist.","Yes, really. Many people."],
+    ["🕯️","Let the to-do list sleep.","Tomorrow-you will handle it."],
+    ["🌿","Small steps still move you forward.","Look how far you've come."],
+    ["🎧","Put on your favorite song.","You've earned a little joy."],
+    ["🛁","A warm shower is waiting.","Wash the day away."],
+    ["🌠","Your effort did not go unseen.","Thank you for all of it."],
+    ["🐈","Be as calm as a sleeping cat.","Zero worries. Maximum comfort."],
+    ["🫶","You are doing better than you think.","Really. Trust the night on this."],
+    ["📵","Permission to ignore your inbox.","Until at least tomorrow morning."],
+    ["🌷","Thanks for being kind today.","It made someone's day easier."],
+    ["🥣","Eat something warm tonight.","You take care of everyone else. Now, you."],
+    ["🛌","Sleep is a productive thing to do.","Go be very productive."],
+    ["🌈","Hard days end. This one just did.","Well done for getting through."],
+    ["🤝","You are not alone in this.","We are all tired together."]
+  ];
+  var RARE=[
+    ["👑","You are the MVP of the whole week.","The trophy is invisible, but very shiny."],
+    ["🚀","Legendary work today!","Scientists are amazed by your stamina."],
+    ["🏆","Gold medal in Getting Things Done.","Please accept this imaginary parade."],
+    ["🦸","You are basically a superhero.","The cape is at the cleaners."],
+    ["🎉","Standing ovation for you!","Everyone is clapping. Very loudly."],
+    ["🐉","You defeated today's final boss.","Loot: one perfect night of rest."],
+    ["💎","One-in-a-million person detected.","Handle with extra snacks."]
+  ];
+  var KEY="nightcheer.v1";
+  var state={drawn:0,rares:0,saved:[],last:null,since:0};
+  try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p){state.drawn=p.drawn|0;state.rares=p.rares|0;state.saved=Array.isArray(p.saved)?p.saved:[];}}}catch(e){}
+  function persist(){try{localStorage.setItem(KEY,JSON.stringify({drawn:state.drawn,rares:state.rares,saved:state.saved}));}catch(e){}}
+
+  var $=function(id){return document.getElementById(id)};
+  var card=$("card"),msg=$("msg"),msgTimer;
+  function say(t){msg.textContent=t;clearTimeout(msgTimer);msgTimer=setTimeout(function(){msg.textContent="";},3500);}
+
+  // stars
+  var sc=$("stars");
+  for(var i=0;i<46;i++){var s=document.createElement("div");s.className="star";var z=Math.random()*2.5+1;
+    s.style.cssText="left:"+Math.random()*100+"%;top:"+Math.random()*100+"%;width:"+z+"px;height:"+z+"px;animation-delay:"+(Math.random()*4).toFixed(2)+"s;animation-duration:"+(3+Math.random()*3).toFixed(1)+"s";
+    sc.appendChild(s);}
+
+  // shuffle-bag deck so cards don't repeat quickly
+  var bag=[];
+  function nextNormal(){if(!bag.length){bag=NORMAL.slice().sort(function(){return Math.random()-.5});if(state.last){bag=bag.filter(function(c){return c[1]!==state.last.title})}}return bag.pop();}
+  function esc(t){var d=document.createElement("div");d.textContent=t;return d.innerHTML;}
+
+  function render(c){
+    var who=$("who").value.trim();
+    var h="";
+    if(c.rare)h+='<div class="rarelabel">★ RARE CARD ★</div>';
+    h+='<div class="icon">'+c.icon+'</div>';
+    if(who)h+='<div class="to">For '+esc(who)+'</div>';
+    h+='<div class="title">'+esc(c.title)+'</div><div class="sub">'+esc(c.sub)+'</div>';
+    h+='<div class="num">Card #'+c.n+'</div>';
+    card.className="card"+(c.rare?" rare":"");
+    card.innerHTML=h;
+    void card.offsetWidth;
+    card.classList.add("flip");
+  }
+
+  function isSaved(c){return c&&state.saved.some(function(s){return s.title===c.title});}
+  function syncButtons(){
+    var has=!!state.last;
+    $("save").disabled=!has;$("copy").disabled=!has;
+    var on=isSaved(state.last);
+    $("save").classList.toggle("on",on);
+    $("save").textContent=on?"♥ Saved":"♡ Save";
+    $("nDrawn").textContent=state.drawn;$("nRare").textContent=state.rares;
+    $("savedCount").textContent=state.saved.length;
+  }
+
+  $("draw").addEventListener("click",function(){
+    state.since++;
+    var rare=Math.random()<0.15||state.since>=12;
+    var d=rare?RARE[Math.floor(Math.random()*RARE.length)]:nextNormal();
+    if(rare)state.since=0;
+    state.drawn++;if(rare)state.rares++;
+    state.last={icon:d[0],title:d[1],sub:d[2],rare:rare,n:state.drawn};
+    render(state.last);persist();syncButtons();
+    say(rare?"✨ A rare golden card! Lucky night.":"A new card for you.");
+  });
+
+  $("who").addEventListener("input",function(){if(state.last)render(state.last);});
+
+  $("save").addEventListener("click",function(){
+    var c=state.last;if(!c)return;
+    if(isSaved(c)){state.saved=state.saved.filter(function(s){return s.title!==c.title});say("Removed from saved.");}
+    else{state.saved.unshift({icon:c.icon,title:c.title,sub:c.sub,rare:c.rare});say("Saved. You can find it in the Saved tab.");}
+    persist();syncButtons();renderList();
+  });
+
+  function cardText(c){
+    var who=$("who").value.trim();
+    return (c.rare?"★ RARE CARD ★\n":"")+(who?"For "+who+"\n":"")+c.icon+" "+c.title+"\n"+c.sub+"\n— sent with Night Cheer 🌙";
+  }
+  function copyText(t,done){
+    function fb(){try{var a=document.createElement("textarea");a.value=t;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.select();var ok=document.execCommand("copy");document.body.removeChild(a);done(ok);}catch(e){done(false);}}
+    try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){done(true)},fb);return;}}catch(e){}
+    fb();
+  }
+  $("copy").addEventListener("click",function(){
+    if(!state.last)return;
+    copyText(cardText(state.last),function(ok){say(ok?"Copied! Paste it into a message to someone.":"Could not copy. Please select the card text instead.");});
+  });
+
+  // tabs
+  function show(which){
+    var d=which==="draw";
+    $("viewDraw").hidden=!d;$("viewSaved").hidden=d;
+    $("tab-draw").setAttribute("aria-selected",d);$("tab-saved").setAttribute("aria-selected",!d);
+    if(!d)renderList();
+  }
+  $("tab-draw").addEventListener("click",function(){show("draw")});
+  $("tab-saved").addEventListener("click",function(){show("saved")});
+
+  function renderList(){
+    var l=$("list");l.innerHTML="";
+    if(!state.saved.length){
+      l.innerHTML='<li class="empty"><div>🌌</div>No saved cards yet.<br>Draw a card and tap “Save” to keep it here.</li>';return;
+    }
+    state.saved.forEach(function(c,i){
+      var li=document.createElement("li");li.className="item"+(c.rare?" rare":"");
+      li.innerHTML='<div class="ic">'+c.icon+'</div><div class="tx"><strong>'+esc(c.title)+'</strong><span>'+esc(c.sub)+(c.rare?' · ★ Rare':'')+'</span></div><div class="mini"><button data-demo="saved-show-'+i+'" data-a="show">Show</button><button data-demo="saved-remove-'+i+'" data-a="rm">Remove</button></div>';
+      li.querySelector('[data-a="show"]').addEventListener("click",function(){
+        state.last={icon:c.icon,title:c.title,sub:c.sub,rare:c.rare,n:state.drawn||1};
+        show("draw");render(state.last);syncButtons();say("Here is your saved card.");
+      });
+      li.querySelector('[data-a="rm"]').addEventListener("click",function(){
+        state.saved.splice(i,1);persist();syncButtons();renderList();
+      });
+      l.appendChild(li);
+    });
+  }
+
+  syncButtons();
+})();
+</script>
+</body>
+</html>
